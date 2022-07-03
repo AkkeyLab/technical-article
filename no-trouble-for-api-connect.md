@@ -15,7 +15,7 @@ GitHub: https://github.com/AkkeyLab/technical-article
 
 > The OpenAPI Specification (OAS) defines a standard, language-agnostic interface to RESTful APIs which allows both humans and computers to discover and understand the capabilities of the service without access to source code, documentation, or through network traffic inspection. When properly defined, a consumer can understand and interact with the remote service with a minimal amount of implementation logic.
 
-引用：https://swagger.io/specification/
+引用： https://swagger.io/specification/
 
 OpenAPI Specification には上記のように説明が書かれており、スマートフォンアプリエンジニア目線で見ると、API 仕様書フォーマットの1つであるということがわかります。つまり、この仕様書がバックエンドとフロントエンドで共通のインターフェースとなるのです。
 
@@ -27,6 +27,32 @@ OpenAPI Specification には上記のように説明が書かれており、ス�
 
 ポイントは、バックエンドとフロントエンドエンジニアの両者が OpenAPI 管理に関わるという点です。このように OpenAPI が共通言語となっているため、バックエンド・フロントエンドがどんな言語・設計で構築されているかに関係なく両者が API 仕様の議論に集中できるのです。  
 このように API 仕様を管理することで、冒頭で述べた失敗事例の殆どを克服することができると言っても良いかもしれません。しかし、仕様が決まったとしても、実際に API をコールすることができるのはバックエンドの開発がある程度進んでからになってしまいます。このようなタイミングでも快適に開発を進めるテクニックを次に紹介していくことにしましょう。
+
+## Moya 利用時の Stub 活用術
+ネットワーク抽象化レイヤ Moya を皆さんはご存知でしょうか。  
+Alamofire に依存する OSS で、RxSwift などとも依存関係を持つため賛否はあるものの、非常に便利なサードパーティ製 framework です。
+
+GET, POST や API path など、API コールに必要な情報を Moya では TargetType というプロトコルに準拠させる形で定義して利用します。以下に実際のコードの一部を示します。
+
+```swift
+import Foundation
+
+public protocol TargetType {
+    var baseURL: URL { get }
+    var path: String { get }
+    var method: Moya.Method { get }
+    var sampleData: Data { get }
+    var task: Task { get }
+    var validationType: ValidationType { get }
+    var headers: [String: String]? { get }
+}
+```
+引用： https://github.com/Moya/Moya/blob/master/Sources/Moya/TargetType.swift
+
+...
+
+Stub を利用することでバックエンドの開発に依存することなく API 通信に関連する処理が実装可能なことを紹介しました。しかし、通信結果を表示する UI の実装に時間がかかってしまえば、動作確認する頃には優秀なバックエンドエンジニアが実装を終えていることでしょう。無駄ではないですが、利点を最大限活かしているとは言い難いのが現状です。  
+そこで、UI の実装時間を短縮する方法を考えてみましょう。
 
 ## XcodePreviews 活用術
 SwiftUI とセットでリリースされた機能である XcodePreviews ですが、副業では特に多くの恩恵を得ており、個人的に神機能として愛用しているものの一つです。
@@ -54,4 +80,7 @@ XcodePreviews の利用イメージを上記に示します。このようにコ
 ということで、実際に業務で利用しているものをお見せしたかったのですが、残念ながら叶いませんでした。なので今回は、私が OSS として公開しているプロジェクトでの利用イメージを掲載させていただきました。  
 GitHub: https://github.com/AkkeyLab/LazyGrid
 
-## Moya 利用時の Stub 活用術
+---
+
+最後までお読みいただきありがとうございます。  
+本稿は GitHub で管理されておりますので、気軽に issue などの形で質問や修正依頼いただけますと幸いです。
