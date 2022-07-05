@@ -30,9 +30,16 @@ OpenAPI Specification には上記のように説明が書かれており、ス�
 
 ## Moya 利用時の Stub 活用術
 ネットワーク抽象化レイヤ Moya を皆さんはご存知でしょうか。  
-Alamofire に依存する OSS で、RxSwift などとも依存関係を持つため賛否はあるものの、非常に便利なサードパーティ製 framework です。
+Alamofire に依存する OSS で、RxSwift などとも依存関係を持つため賛否はあるものの、個人的にも愛用しているサードパーティ製 framework です。
 
-GET, POST や API path など、API コールに必要な情報を Moya では TargetType というプロトコルに準拠させる形で定義して利用します。以下に実際のコードの一部を示します。
+### 前提
+次に、Stub（スタブ）をご存知でしょうか。  
+プログラミングの分野では、実際の動作結果の代わりに準備された代用品という意味で使われる用語になります。例えば、iOS アプリの単体テストで実際にサーバと通信を行った場合、オフライン環境やサーバメンテ中の環境ではテスト不合格という結果になってしまいます。そこで、通信結果を Stub という形で準備することで、通信環境やサーバの状態に依存することなく iOS アプリテストに集中できるのです。  
+Stub は知ってた！という皆さんは Stub と Mock の違いについて考えてみると面白いかもしれません。ぜひ iOSDC 会場での会話ネタにしてみてください！  
+
+### Stub の利用
+では、Moya でその Stub を利用する手順を見ていきましょう。  
+API コールに必要な情報を Moya では TargetType というプロトコルに準拠させる形で定義して利用します。以下に実際の Moya 内部のコードを示します（本稿執筆時点のコード）。
 
 ```swift
 import Foundation
@@ -49,9 +56,55 @@ public protocol TargetType {
 ```
 引用： https://github.com/Moya/Moya/blob/master/Sources/Moya/TargetType.swift
 
-...
+上記の、Data 型を返す sampleData に、通信に成功したと場合のレスポンスを指定することで、通信処理で Stub を利用することができるようになります。具体的な実装方法を以下に示します。
 
-Stub を利用することでバックエンドの開発に依存することなく API 通信に関連する処理が実装可能なことを紹介しました。しかし、通信結果を表示する UI の実装に時間がかかってしまえば、動作確認する頃には優秀なバックエンドエンジニアが実装を終えていることでしょう。無駄ではないですが、利点を最大限活かしているとは言い難いのが現状です。  
+```swift
+var sampleData: Data {
+    """
+    [
+        {
+            "id": "fcf81b2a-36d2-d695-d4b2-akkey2022lab",
+            "name": "iOSDC Japan 2022"
+        }
+    ]
+    """.data(using: .utf8)!
+}
+```
+
+Moya では以下のように Stub を利用するように指定することで、実際に通信を行わず、先程定義した sampleData を結果として返してくれるようになります。汎用的な実装方法に関しては、Moya プロジェクトの単体テストを参考にしてみると良いでしょう。
+
+```swift
+struct SampleTarget: TargetType { ... }
+
+MoyaProvider<SampleTarget>(stubClosure: MoyaProvider.immediatelyStub)
+    .request(
+        SampleTarget(),
+        completion: { result in
+            // do something
+        }
+    )
+```
+
+### 応用
+ここまで Stub とそれを Moya で利用するための方法を紹介してきました。これらは単体テストで利用されることが多いですが、バックエンド開発が終わっていないタイミングの開発でも力を発揮してくれるのです。  
+
+```swift
+#if DEBUG
+    MoyaProvider<SampleTarget>(stubClosure: MoyaProvider.immediatelyStub)
+#else
+    MoyaProvider<SampleTarget>()
+#endif
+    .request(
+        SampleTarget(),
+        completion: { result in
+            // do something
+        }
+    )
+```
+
+上記のように分岐処理を施すことで我々が開発しやすくなるだけでなく、チームでのデザインレビューをバックエンド開発を待たずして実施することが可能になります。
+
+このように Stub を利用することでバックエンドの開発に依存することなく API 通信に関連する処理が実装可能なことを紹介しました。しかし、通信結果を表示する UI の実装に時間がかかってしまえば、動作確認する頃には優秀なバックエンドエンジニアが実装を終えていることでしょう。無駄ではないですが、利点を最大限活かしているとは言い難いのが現状です。  
 そこで、UI の実装時間を短縮する方法を考えてみましょう。
 
 ## XcodePreviews 活用術
