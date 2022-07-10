@@ -91,7 +91,7 @@ Apple Silicon 発表当初、私は「所詮 iPhone に搭載されるプロセ�
 |  IA-64  |  アイエー  |  64 は 64bit の意味  |
 |  CISC  |  シスク  |  Complex Instruction Set Computer の略  |
 |  RISC  |  リスク  |  Reduce Instruction Set Computer の略  |
-|  Rosetta2  |  ロゼッタ  |  2はナンバリング  |
+|  Rosetta2  |  ロゼッタ  |  2 はナンバリング  |
 
 ## 5. Bibliographic References
 - [自作エミュレータで学ぶx86アーキテクチャ コンピュータが動く仕組みを徹底理解！](https://www.amazon.co.jp/dp/B0148FQNVC)
