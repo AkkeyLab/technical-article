@@ -16,14 +16,14 @@ GitHub: https://github.com/AkkeyLab/technical-article
 本稿ではグラフの描画に mermaid を利用して執筆いたしました。そのため、皆さんの開発環境に合わせた改良が施しやすくなっております。  
 ちなみに、私が所属するWED株式会社のエンジニアチームでは mermaid を GitHub や Notion 上で積極的に利用しており、業務でも利用されることが増えているツールのように感じます。ですから、mermaid をまだ使ったことがないという方は本稿も参考に導入を検討してみてはいかがでしょうか。
 
-## 1. 問題の認知：
+## 1. 問題の認知
 ```mermaid
 flowchart LR;
-    id-cognition(Problem \nRecognition)
+    id-cognition(Problem\nRecognition)
     user("User")-->id-cognition
     alert("Alert")-->id-cognition
     debug("Debug")-->id-cognition
-    id-cognition-->id-release{"Recent \nReleases"}
+    id-cognition-->id-release{"Recent\nReleases"}
     id-release--"App"-->id-fix("Fix App")
     id-release--"None"-->id-expect{"Expect"}-.->next("Some")
     id-release--"Server"-->id-revert("Revert Server")
@@ -50,3 +50,29 @@ flowchart LR;
 
 ### 何もしてないのに…
 直近リリースを行っておらず、設定の変更なども行っていないという場合の調査方法は様々です。その調査方法についても以後ご紹介いたします。
+
+## 2. アプリ起因の不具合
+アプリ側の実装によって発生するようになったクラッシュであるというところまで原因特定が出来ている場合を考えてみましょう。  
+スタックトレースの確認と手元で再現するかの確認は必須です。問題はこれで原因特定が出来なかった場合です。
+
+```mermaid
+flowchart LR;
+    id-alert("Crash Alert")-->id-stack-trace("Show Stack trace")
+    id-stack-trace-->local-crash{"Crash\nlocally ?"}--"Yes"-->id-find("Bug find !")-->id-fix(("Fix"))-->id-alert
+    local-crash--"No"-->os_device("Check\nOS & Device")-->id-find
+    local-crash--"No"-->logs("Check Logs")-->id-find
+    local-crash--"No"-->disable-code("Disable code")-->id-fix
+    fixed-disable("Fixed by disable code")-->id-find
+```
+
+### クラッシュ直前の規則性
+スタックトレースとセットで見ていただきたいのがイベントログやスクリーンログです。これらを用いて、クラッシュ直前のログに規則性がないか複数のログから確認を行います。  
+この調査方法が有効なシチュエーションとしては、クラッシュ箇所とは別のところに引き金が潜んでいるケースです。例えば、チュートリアル動画再生部分でメモリリークが発生し、その後の操作でクラッシュしてしまうケースが考えられます。この場合、クラッシュしているユーザは直前にチュートリアル動画を視聴しているという規則性が見られるはずです。
+
+### 一度変更を戻してみる
+「手元でも再現しない、ログからも原因がはっきりしない、でもココらへんが原因でクラッシュするようになったのは確かなようだ」このように煮詰まってしまうこともあるでしょう。  
+このような場合は思い切って原因と思われる箇所を元に戻してリリースしてみましょう。悔しいですが、調査中にも多くのユーザがクラッシュに遭遇し、最悪の場合それが原因で離脱しているという状況は早急に対処しなければなりません。
+
+ポイントはどれだけ元に戻すかです。  
+「直近のリリースでプロフィール画面を触っていて、プロフィール画面内でのクラッシュが発生するようになった」のように、ざっくりとした原因箇所が分かる場合はそこのみをもとに戻すという選択肢もあります。これにより、他の変更箇所はクラッシュに関係ないとして調査を進めることができるようになります。  
+ただし、クラッシュ遭遇率が高いなど緊急度が高い場合はリリース全体の切り戻しを行うことをおすすめします。これは、先程の「ざっくりとした原因箇所」が間違っていた場合というリスクを排除するためです。
