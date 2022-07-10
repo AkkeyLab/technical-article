@@ -83,7 +83,17 @@ Apple Silicon 発表当初、私は「所詮 iPhone に搭載されるプロセ�
 文系・理系関係なく楽しんでいただけるように執筆したと初めに書きましたが、非常に難易度の高い内容に感じた方もいたかもしれません。ですが、今年の iOSDC はオフライン開催が予定されておりますので、ぜひ私を探して質問攻めしちゃってください。  
 また、本稿は GitHub で管理されておりますので、気軽に issue などの形で質問や修正依頼いただけますと幸いです。
 
-## 4. Bibliographic References
+## 4. 用語集
+|  表記  |  読みの一例  |  備考  |
+| ---- | ---- | ---- |
+|  x86_64  |  エックスハチロク  |  64 は 64bit の意味  |
+|  arm64  |  アーム  |  64 は 64bit の意味  |
+|  IA-64  |  アイエー  |  64 は 64bit の意味  |
+|  CISC  |  シスク  |  Complex Instruction Set Computer の略  |
+|  RISC  |  リスク  |  Reduce Instruction Set Computer の略  |
+|  Rosetta2  |  ロゼッタ  |  2はナンバリング  |
+
+## 5. Bibliographic References
 - [自作エミュレータで学ぶx86アーキテクチャ コンピュータが動く仕組みを徹底理解！](https://www.amazon.co.jp/dp/B0148FQNVC)
 - [Embedded System  - CISC vs RISC](http://www.sharetechnote.com/html/EmbeddedSystem_CISC_RISC.html)
 - [How x86 to arm64 Translation Works in Rosetta 2](https://www.infoq.com/news/2020/11/rosetta-2-translation/)
