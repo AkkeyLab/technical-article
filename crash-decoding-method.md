@@ -20,17 +20,17 @@ GitHub: https://github.com/AkkeyLab/technical-article
 ```mermaid
 flowchart LR;
     id-cognition(Problem\nRecognition)
-    user("User")-->id-cognition
-    alert("Alert")-->id-cognition
-    debug("Debug")-->id-cognition
-    id-cognition-->id-release{"Recent\nReleases"}
-    id-release--"App"-->id-fix("Fix App")
-    id-release--"None"-->id-expect{"Expect"}-.->next("Some")
-    id-release--"Server"-->id-revert("Revert Server")
+    user(User)-->id-cognition
+    alert(Alert)-->id-cognition
+    debug(Debug)-->id-cognition
+    id-cognition-->id-release{Recent\nReleases}
+    id-release-->|App| id-fix(Fix App)
+    id-release-->|None| id-expect{Expect}-.->next(Some)
+    id-release-->|Server| id-revert(Revert Server)
     id-cognition-->id-fix
     id-cognition-->id-revert
-    id-fix-->rereview("App Re-review")
-    id-fix-.->workaround("Workaround by Server")
+    id-fix-->rereview(App Re-review)
+    id-fix-.->workaround(Workaround by Server)
 ```
 
 これから難問の解読方法をいくつか紹介していくのですが、不具合が発生・発覚した場合の基本的な対処方法の実施が前提になります。ということで、まずは基礎から見ていきましょう。
@@ -58,12 +58,12 @@ flowchart LR;
 
 ```mermaid
 flowchart LR;
-    id-alert("Crash Alert")-->id-stack-trace("Show Stack trace")
-    id-stack-trace-->id-local-crash{"Crash\nlocally ?"}--"Yes"-->id-find("Bug find !")-->id-fix(("Fix"))-->id-alert
-    id-local-crash--"No"-->os_device("Check\nOS & Device")-->id-find
-    id-local-crash--"No"-->logs("Check Logs")-->id-find
-    id-local-crash--"No"-->disable-code("Disable code")-->id-fix
-    fixed-disable("Fixed by disable code")-->id-find
+    id-alert(Crash Alert)-->id-stack-trace(Show Stack trace)
+    id-stack-trace-->id-local-crash{Crash\nlocally ?}-->|Yes| id-find(Bug find !)-->id-fix((Fix))-->id-alert
+    id-local-crash-->|No| os_device(Check\nOS & Device)-->id-find
+    id-local-crash-->|No| logs(Check Logs)-->id-find
+    id-local-crash-->|No| disable-code(Disable code)-->id-fix
+    fixed-disable(Fixed by disable code)-->id-find
 ```
 
 ### クラッシュ直前の規則性
@@ -105,14 +105,14 @@ flowchart LR;
 
 ```mermaid
 flowchart LR;
-    id-alert("Crash Alert")-->id-stack-trace("Show Stack trace")-->id-third-party{"Third party\nLibrary ?"}
-    id-third-party-."No".->id-some("Some")-->id-fix(("Fix"))
-    id-third-party--"Yes"-->id-api-status("Check\nAPI status")
-    id-third-party--"Yes"-->id-twitter("Show Twitter")-.->id-fix
-    id-twitter-->id-notification(("Notification"))
+    id-alert(Crash Alert)-->id-stack-trace(Show Stack trace)-->id-third-party{Third party\nLibrary ?}
+    id-third-party-.->|No| id-some(Some)-->id-fix((Fix))
+    id-third-party-->|Yes| id-api-status(Check\nAPI status)
+    id-third-party-->|Yes| id-twitter(Show Twitter)-.->id-fix
+    id-twitter-->id-notification((Notification))
     id-api-status-->id-notification
     id-api-status-->id-fix
-    server-alert("Server Alert")-->console("Show console")-->id-third-party
+    server-alert(Server Alert)-->console(Show console)-->id-third-party
 ```
 
 ### ステータス確認
@@ -133,8 +133,8 @@ GitHub Unicorn: https://github.com/503.html
 ### 調査開始
 ```mermaid
 flowchart LR;
-    boot("Boot")--"modal"-->a("ScreenA")--"push"-->b("ScreenB")--"push"-->c("ScreenC")--"close modal"-->boot
-    c-.->crash(("Crash"))
+    boot(Boot)-->|modal| a(ScreenA)-->|push| b(ScreenB)-->|push| c(ScreenC)-->|close modal| boot
+    c-.->crash((Crash))
 ```
 
 クラッシュは上記のようなタイミングで発生しました。モーダル遷移した画面内で複数のプッシュ遷移を行った後、モーダルを閉じるボタンを押したタイミングでクラッシュするというものでした。  
