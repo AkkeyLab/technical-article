@@ -100,13 +100,18 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 ここまでで、plist を書き換える下準備が整ったので、次から実際のスクリプトを書いていくことにしましょう。
 
 ```sh
-security find-generic-password -a NATIONAL-TAX-AGENCY -s NTA-API-KEY -w
+security find-generic-password \
+    -a NATIONAL-TAX-AGENCY \
+    -s NTA-API-KEY \
+    -w
 ```
 
 まず初めに、Keychain Access に保存されたシークレットキーを取得する方法を確認しておきましょう。実は非常にシンプルで、保存時と同じ `security` コマンドで取得が可能です。
 
 ```sh
-/usr/libexec/PlistBuddy -c "Set:LSEnvironment:NATIONAL_TAX_AGENCY_API_KEY ${NTA_API_KEY}" "${TEMP_DIR}/Preprocessed-Info.plist"
+/usr/libexec/PlistBuddy -c \
+    "Set:LSEnvironment:NATIONAL_TAX_AGENCY_API_KEY ${NTA_API_KEY}" \
+    "${TEMP_DIR}/Preprocessed-Info.plist"
 ```
 
 次に、plist ファイルの編集には `PlistBuddy` コマンドを利用します。このコマンドは Xcode Cloud でも利用することが可能です。  
@@ -143,7 +148,9 @@ fi
 if [ ! "${NTA_API_KEY}" ];then
     echo "error: NTA_API_KEY does not exist in Keychain Access"
 fi
-/usr/libexec/PlistBuddy -c "Set:LSEnvironment:NATIONAL_TAX_AGENCY_API_KEY ${NTA_API_KEY}" "${TEMP_DIR}/Preprocessed-Info.plist"
+/usr/libexec/PlistBuddy -c \
+    "Set:LSEnvironment:NATIONAL_TAX_AGENCY_API_KEY ${NTA_API_KEY}" \
+    "${TEMP_DIR}/Preprocessed-Info.plist"
 ```
 
 ---
