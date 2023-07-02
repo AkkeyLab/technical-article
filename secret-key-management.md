@@ -45,12 +45,8 @@ GUI もしくは `security` コマンド経由で、ローカルマシンの Key
 ただし、この操作を CI などで実施しないでください（Xcode Cloud では `security` コマンドの使用が禁じられています）。なぜなら、実行コマンドをセキュアに管理することができないからです。
 
 ### 3. ビルドのタイミングで info.plist に書き込み
-
-```sh
-security find-generic-password -a NATIONAL-TAX-AGENCY -s NTA-API-KEY -w
-```
-
-まず初めに、Keychain Access に保存されたシークレットキーを取得する方法を確認しておきましょう。実は非常にシンプルで、保存時と同じ `security` コマンドで取得が可能です。
+初めに仮定義を行った `info.plist` ファイルに正しいシークレットキーを書き込むのですが、直接書き込んでしまうと `info.plist` に差分が生じてしまいます。そこで、ビルド時に一時ファイルとして生成される　`Preprocessed-Info.plist` ファイルに書き込むという手法を採用することにしましょう。  
+この一時ファイルの生成はデフォルトで無効化されているため、Build Settings から Preprocess Info.plist File の項目を YES に書き換えて有効化します。
 
 ```xml
 F4C37D3F296AEE2200D0084B /* Debug */ = {
@@ -60,21 +56,72 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 	};
 	name = Debug;
 };
-F4C37D40296AEE2200D0084B /* Release */ = {
-	isa = XCBuildConfiguration;
-	buildSettings = {
-		INFOPLIST_PREPROCESS = YES;
-	};
-	name = Release;
-};
 ```
 
-次に、plist ファイルの編集には `PlistBuddy` コマンドを利用できます。  
+`project.pbxproj` ファイルでは上記のように設定が反映されていることを確認してください。なお、Build Configuration の内容と個数はプロジェクトによって異なる可能性がありますので、シークレットキーを利用するもの全てに適応させてください。
 
+次に重要になるのが　`Preprocessed-Info.plist` ファイルを書き換えるタイミングです。このファイルはあくまでも一時ファイルなので、利用される直前がベストであると言えます。したがって、plist ファイルを書き換えるスクリプトは Copy Bundle Resources の直前にすると良いと分かります。  
+実際にスクリプトを設定したときの `project.pbxproj` ファイルの一部を以下に示します。
+
+```xml
+/* Begin PBXNativeTarget section */
+		F4C37D2F296AEE2100D0084B /* c-search */ = {
+			...
+			buildPhases = (
+				F4C37D2C296AEE2100D0084B /* Sources */,
+				F4C37D2D296AEE2100D0084B /* Frameworks */,
+				F4FDC7E729979DDB0057D80A /* Setting Environment Variables */,
+				F4C37D2E296AEE2100D0084B /* Copy Bundle Resources */,
+				F4FDC7FB2998D9A10057D80A /* Embed App Clips */,
+				F46CEF4E29BD9D610096B6E1 /* Embed Foundation Extensions */,
+			);
+			...
+		};
+/* End PBXNativeTarget section */
+```
+
+これは、Build Phases の設定が記述されている箇所で、Copy Bundle Resources の直前に Setting Environment Variables という名前でスクリプトを配置していることが分かります。
+
+```xml
+/* Begin PBXShellScriptBuildPhase section */
+		F4FDC7E729979DDB0057D80A /* Setting Environment Variables */ = {
+			...
+			inputPaths = (
+				"$(TEMP_DIR)/Preprocessed-Info.plist",
+			);
+			...
+			shellPath = /bin/sh;
+			shellScript = "...";
+		};
+/* End PBXShellScriptBuildPhase section */
+```
+
+これは、先程 Setting Environment Variables という名前で登録されていたスクリプトの詳細設定が記述されている箇所になります。注意しなければならないこととして、 `Preprocessed-Info.plist` のパスを Input Paths に追加する必要がある点があります。  
+ここまでで、plist を書き換える下準備が整ったので、次から実際のスクリプトを書いていくことにしましょう。
+
+```sh
+security find-generic-password -a NATIONAL-TAX-AGENCY -s NTA-API-KEY -w
+```
+
+まず初めに、Keychain Access に保存されたシークレットキーを取得する方法を確認しておきましょう。実は非常にシンプルで、保存時と同じ `security` コマンドで取得が可能です。
 
 ```sh
 /usr/libexec/PlistBuddy -c "Set:LSEnvironment:NATIONAL_TAX_AGENCY_API_KEY ${NTA_API_KEY}" "${TEMP_DIR}/Preprocessed-Info.plist"
 ```
+
+次に、plist ファイルの編集には `PlistBuddy` コマンドを利用します。このコマンドは Xcode Cloud でも利用することが可能です。  
+`-c` オプションの次に指定する1つ目の文字列で編集内容を指定します。今回は値の書き込みなので `Set:` で始まり、書き込み対象は plist の key タグを辿って指定します。そして、半角スペースの後に書き込む値を埋め込みます。最後に、2つ目の文字列で書き込み対象のファイルパスを指定しています。
+
+```swift
+guard let environment = Bundle.main.object(forInfoDictionaryKey: "LSEnvironment") as? [String: String],
+      let apiKey = environment["NATIONAL_TAX_AGENCY_API_KEY"],
+      !apiKey.isEmpty
+else {
+    throw  SearchCompanyError.apiKeyNotFound
+}
+```
+
+最後に、plist からシークレットキーを取得する処理を実装して動作確認を行ってみましょう。
 
 ```sh
 if [ ! "${NTA_API_KEY}" ];then
