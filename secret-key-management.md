@@ -121,7 +121,20 @@ else {
 }
 ```
 
-最後に、plist からシークレットキーを取得する処理を実装して動作確認を行ってみましょう。
+最後に、plist からシークレットキーを取得する処理を実装して動作確認を行ってみましょう。完全なスクリプトは Xcode Cloud 対応のセクションに載せていますので、実践される際はご利用ください。
+
+## Xcode Cloud 対応
+Xcode Cloud では `security` コマンドを利用することができません。仮に利用できたとしても、シークレットキーを保存する処理が別で必要になってしまし、セキュアに管理することが難しくなってしまいます。  
+そこで、Xcode Cloud のワークフローで設定可能な環境変数を活用してみることにしましょう。
+
+```sh
+if [ ! "${NTA_API_KEY}" ];then
+    export NTA_API_KEY="$(security find-generic-password -a NATIONAL-TAX-AGENCY -s NTA-API-KEY -w)"
+fi
+```
+
+このようにスクリプトを改良することで、ローカルマシン上では Keychain Access 経由、Xcode Cloud 上では環境変数経由でシークレットキーを取得することが可能となります。ここでは、Xcode Cloud を例に説明していますが、他の CI サービスでも同様の環境変数を用いてシークレットキーの管理が可能です。  
+最終的なスクリプトは以下のようになります。
 
 ```sh
 if [ ! "${NTA_API_KEY}" ];then
