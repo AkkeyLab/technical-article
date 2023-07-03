@@ -42,11 +42,11 @@ info.plist ファイルにシークレットキーの定義を環境変数とし
 GUI もしくは `security` コマンド経由で、ローカルマシンの Keychain Access App にシークレットキーを保存します。チーム開発環境下では、1password などのパスワード管理ソフトにシークレットキーと共に登録コマンドをメモしておくと便利かもしれません。  
 なお、 `security` コマンドについては `man security` で調べることができます。
 
-ただし、この操作を CI などで実施しないでください（Xcode Cloud では `security` コマンドの使用が禁じられています）。なぜなら、実行コマンドをセキュアに管理することができないからです。
+ただし、このコマンドを CI では実行しないでください。なお、Xcode Cloud では `security` コマンドの使用が禁じられています。
 
 ### 3. ビルドのタイミングで info.plist に書き込み
-初めに仮定義を行った `info.plist` ファイルに正しいシークレットキーを書き込むのですが、直接書き込んでしまうと `info.plist` に差分が生じてしまいます。そこで、ビルド時に一時ファイルとして生成される　`Preprocessed-Info.plist` ファイルに書き込むという手法を採用することにしましょう。  
-この一時ファイルの生成はデフォルトで無効化されているため、Build Settings から Preprocess Info.plist File の項目を YES に書き換えて有効化します。
+初めに仮定義を行った `info.plist` ファイルに正しいシークレットキーを書き込んでいきましょう。ただし、直接書き込んでしまうと `info.plist` ファイルに差分が生じてしまいます。そこで、ビルド時に一時ファイルとして生成される　`Preprocessed-Info.plist` ファイルを書き換えるという手法を採用することにします。  
+この一時ファイルの生成はデフォルトで無効化されているため、Build Settings から Preprocess Info.plist File という項目の値を YES に書き換えることで有効化します。
 
 ```xml
 F4C37D3F296AEE2200D0084B /* Debug */ = {
@@ -58,7 +58,7 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 };
 ```
 
-`project.pbxproj` ファイルでは上記のように設定が反映されていることを確認してください。なお、Build Configuration の内容と個数はプロジェクトによって異なる可能性がありますので、シークレットキーを利用するもの全てに適応させてください。
+`project.pbxproj` ファイルにおける定義の該当箇所を上記に示します。なお、Build Configuration の内容と個数はプロジェクトによって異なる可能性がありますので、シークレットキーを利用するもの全てに適応させてください。
 
 次に重要になるのが　`Preprocessed-Info.plist` ファイルを書き換えるタイミングです。このファイルはあくまでも一時ファイルなので、利用される直前がベストであると言えます。したがって、plist ファイルを書き換えるスクリプトは Copy Bundle Resources の直前にすると良いと分かります。  
 実際にスクリプトを設定したときの `project.pbxproj` ファイルの一部を以下に示します。
@@ -80,7 +80,7 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 /* End PBXNativeTarget section */
 ```
 
-これは、Build Phases の設定が記述されている箇所で、Copy Bundle Resources の直前に Setting Environment Variables という名前でスクリプトを配置していることが分かります。
+上記は、Build Phases の設定が記述されている箇所で、Copy Bundle Resources の直前に Setting Environment Variables という名前でスクリプトを配置していることが分かります。
 
 ```xml
 /* Begin PBXShellScriptBuildPhase section */
@@ -96,7 +96,7 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 /* End PBXShellScriptBuildPhase section */
 ```
 
-これは、先程 Setting Environment Variables という名前で登録されていたスクリプトの詳細設定が記述されている箇所になります。注意しなければならないこととして、 `Preprocessed-Info.plist` のパスを Input Paths に追加する必要がある点があります。  
+上記は、先程 Setting Environment Variables という名前で登録されていたスクリプトの詳細設定が記述されている箇所になります。 `Preprocessed-Info.plist` のパスを Input Paths に追加する必要がある点に注意してください。  
 ここまでで、plist を書き換える下準備が整ったので、次から実際のスクリプトを書いていくことにしましょう。
 
 ```sh
