@@ -161,10 +161,70 @@ KMM とは Kotlin Multiplatform Mobile の略で、ビジネスロジックを K
 2. シークレットキーを環境変数に追加
 
 ### 1. サードパーティライブラリの導入
-Android SDK 17以降には BuildConfig というクラスが存在しており、デバッグとプロダクションで挙動を変えるときの設定などを行うことができます。ここではカスタム定数の定義なども行うことができるため、今回のシークレットキー管理に活用することができそうです。  
-しかし、これはあくまでも Android 側の機能であり、本稿執筆時点で KMM は BuildConfig のような機能が実装されていません。
+Android アプリ開発における Gradle は、ビルド時に BuildConfig というクラスを生成します。このクラスは、デバッグとプロダクションで使用する環境変数の分岐などを定義できるもので、Xcode の Build Configuration に近い存在です。  
+この BuildConfig クラスにシークレットキーを定義できればアプリ本体のコードからシークレットキーを排除することが実現できそうです。しかし、これはあくまでも Android 側の機能であり、本稿執筆時点で KMM は BuildConfig のような機能が実装されていません。
+
+```kotlin
+plugins {
+    id("com.codingfeline.buildkonfig").version("+")
+}
+```
+
+そこで、今回はyshrsmzさんが提供する `BuildKonfig` （*1）を利用したいと思います。KMM 側の shared な `build.gradle.kts` ファイルに上記を追記することで導入可能です。Swift Package Manager を利用されている方であれば、Gradle も似た感覚で利用することができるかと思います。
+
+```kotlin
+buildkonfig {
+    packageName = "..."
+
+    defaultConfigs {
+        buildConfigField(STRING, "NTA_API_KEY", "key")
+    }
+
+    targetConfigs {
+        create("android") {
+            buildConfigField(STRING, "NTA_API_KEY", "key")
+        }
+        create("ios") {
+            buildConfigField(STRING, "NTA_API_KEY", "key")
+        }
+    }
+}
+```
+
+BuildKonfig を活用した設定の一例を上記に示します。  
+`buildkonfig` ブロックから始まり、 `defaultConfigs` と `targetConfigs` というブロックがネストして定義されています。このように、iOS と Android で適応する値を別で定義できるのも KMM 特有の仕様ですね。  
+そして、最も重要なのが `buildConfigField` 関数です。第一引数には変数の型を、第二引数には変数名を文字列で、第三引数には実際のシークレットキーを文字列で指定します。しかし、ここで直接シークレットキーを書いてしまうと、結果的にシークレットキーをコミットに含めてしまうことになります。
 
 ### 2. シークレットキーを環境変数に追加
+
+```kotlin
+System.getenv("NTA_API_KEY")
+```
+
+そこで、ローカルの環境変数を取得する処理を Kotlin で書いてみることにしましょう。すると、上記のようになります。このようにすることで、バニラ環境のときと同じく、特に追加の対応を必要とせず CI でも動作させることが可能となります。
+
+```kotlin
+buildConfigField(STRING, "NTA_API_KEY", "${System.getenv("NTA_API_KEY")}")
+```
+
+環境変数を取得する処理を反映させた `buildConfigField` 関数を上記に示します。
+
+```kotlin
+val apiKey = BuildKonfig.NTA_API_KEY
+val response: HttpResponse = client.get("https://api....nta.go.jp/../") {
+    parameter("id", apiKey)
+    ...
+}
+```
+
+プログラム側からは上記のように環境変数へアクセスすることが可能です。
+
+```sh
+echo -e "export NTA_API_KEY=8440F6C4-EB3C-D545-1741-67E3DAD0C6B1" >>~/.zshrc
+```
+
+最後に、ローカル環境で環境変数を管理する方法についてご紹介します。最も簡単なのは、上記のように `.zshrc` ファイルなど、お使いのシェルの RC ファイルに書き込んでしまう方法です。  
+しかし、これではローカル環境であればどこからでも簡単にアクセスできてしまう点が少し気になるかもしれません。このような場合は direnv（*2）というツールが便利です。このツールを利用することで、ディレクトリごとに環境変数を反映させることが可能になります。
 
 ---
 
@@ -172,6 +232,9 @@ Android SDK 17以降には BuildConfig というクラスが存在しており�
 
 どこか一部でも皆さんの環境に活かせるものがあると嬉しいです。  
 本稿は GitHub で管理されておりますので、気軽に issue などの形で質問や修正依頼いただけますと幸いです。
+
+*1: https://github.com/yshrsmz/BuildKonfig  
+*2: https://github.com/direnv/direnv
 
 ## 著者
 - AkkeyLab株式会社 代表取締役

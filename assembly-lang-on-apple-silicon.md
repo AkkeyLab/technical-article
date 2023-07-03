@@ -16,7 +16,7 @@ GitHub: https://github.com/AkkeyLab/technical-article
 
 ## アセンブリとは
 皆さんは「ファービー」という玩具をご存知ですか？アメリカの Tiger Electronics が1998年に発売し、日本では株式会社タカラトミーから販売されました。この玩具は、筐体に内蔵された各センサーからの入力を元に会話や歌を披露してくれるというもので、当時多くの注目を集めました。  
-実はこの初代ファービー、アセンブリという言語でプログラミングされていたことが分かっています（※1）。
+実はこの初代ファービー、アセンブリという言語でプログラミングされていたことが分かっています（*1）。
 
 この言語のことを、アセンブラ言語と呼ぶこともあるようですが、本稿ではアセンブリ言語と表現し、アセンブリで書かれたプログラムを機械語に変換するツールをアセンブラと呼ぶことにします。つまり、アセンブリをアセンブラでアセンブルするのです。
 
@@ -32,7 +32,7 @@ GitHub: https://github.com/AkkeyLab/technical-article
 ここで、システムコールという用語が多く登場していることに気づくかと思います。実は、機械語に近いアセンブリであっても、CPU を自由自在に操作できるわけではなく、カーネルに対してシステムコールという命令を行うことで処理を実行することになります。これは Swift で `print` 関数を用いて標準出力を行う感覚に近いかもしれません。
 
 ### 1. 利用するシステムコールの把握
-準備されているシステムコールの一覧は Apple から `syscalls.master` というファイル（※2）で公開されています。今回は `Hello, World!` の文字列表示を行いたいので、標準入出力が可能な `write` というシステムコールを利用することにします。
+準備されているシステムコールの一覧は Apple から `syscalls.master` というファイル（*2）で公開されています。今回は `Hello, World!` の文字列表示を行いたいので、標準入出力が可能な `write` というシステムコールを利用することにします。
 
 ```
 4	AUE_NULL	ALL	{ user_ssize_t write(int fd, user_addr_t cbuf, user_size_t nbyte); }
@@ -75,7 +75,7 @@ greeting: .ascii "Hello, AkkeyLab\n"
 ```
 
 3つの引数をレジスタに格納するコードは上記のようになります。  
-これは `AArch64 アセンブリ記法` と呼ばれる記法（※3）で `ARM アセンブリ記法` の 64bit 版です。左からニーモニックと呼ばれる命令、レジスタ、命令の対象となる値、という順番で書かれています。  
+これは `AArch64 アセンブリ記法` と呼ばれる記法（*3）で `ARM アセンブリ記法` の 64bit 版です。左からニーモニックと呼ばれる命令、レジスタ、命令の対象となる値、という順番で書かれています。  
 なので、 `mov X0, #1` は `1` を `X0` に `mov` すると読むことができます。 `mov` は値の移動を行う命令なので、レジスタの番地 `X0` に `1` を格納しているのだと分かります。これが `write` システムコールの第一引数に渡したい値で、今回は文字列の「出力」を行いたいので `1` を指定しています。  
 なお、整数値の前にシャープを付けるのは、その数字がアドレス値ではないことを伝えるためのものです。
 
@@ -160,9 +160,9 @@ ld -o greeting greeting.o \
 文系・理系関係なく楽しんでいただけるように執筆したと初めに書きましたが、非常に難易度の高い内容に感じた方もいたかもしれません。ですが、今年の iOSDC はオフライン開催が予定されておりますので、ぜひ私を探して質問攻めしちゃってください。  
 また、本稿は GitHub で管理されておりますので、気軽に issue などの形で質問や修正依頼いただけますと幸いです。
 
-※1: http://www.seanriddle.com/furbysource.pdf  
-※2: https://opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master  
-※3: [Apple Silicon から学ぶ CPU の歴史](https://github.com/AkkeyLab/technical-article/blob/main/cpu-history.md)
+*1: http://www.seanriddle.com/furbysource.pdf  
+*2: https://opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master  
+*3: [Apple Silicon から学ぶ CPU の歴史](https://github.com/AkkeyLab/technical-article/blob/main/cpu-history.md)
 
 ## 著者
 - AkkeyLab株式会社 代表取締役
