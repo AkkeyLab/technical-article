@@ -189,12 +189,12 @@ ld -o greeting greeting.o \
 ---
 
 最後までお読みいただきありがとうございます。  
-文系・理系関係なく楽しんでいただけるように執筆したと初めに書きましたが、非常に難易度の高い内容に感じた方もいたかもしれません。ですが、今年の iOSDC はオフライン開催が予定されておりますので、ぜひ私を探して質問攻めしちゃってください。  
+当初は計算処理も紹介予定でしたが、予想以上のボリュームになってしまったため、文字列の標準出力までを解説させていただきました。できる限り丁寧な説明を心がけましたが、非常に難易度の高い内容に感じた方もいたかもしれません。ですが、今年の iOSDC はオフライン開催が予定されておりますので、ぜひ私を探して質問攻めしちゃってください。  
 また、本稿は GitHub で管理されておりますので、気軽に issue などの形で質問や修正依頼いただけますと幸いです。
 
 ## 参考文献
-*1: Riddle, Sean. "Furby Source Code." http://www.seanriddle.com/furbysource.pdf
-*2: https://opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master  
+*1: [Furby Source Code](http://www.seanriddle.com/furbysource.pdf)   
+*2: [システムコールマスターファイル](https://opensource.apple.com/source/xnu/xnu-1504.3.12/bsd/kern/syscalls.master)  
 *3: [Apple Silicon から学ぶ CPU の歴史](https://github.com/AkkeyLab/technical-article/blob/main/cpu-history.md)
 
 ## 著者
