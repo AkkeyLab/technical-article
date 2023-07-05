@@ -117,8 +117,11 @@ security find-generic-password \
     "${TEMP_DIR}/Preprocessed-Info.plist"
 ```
 
-次に、plist ファイルの編集には `PlistBuddy` コマンドを利用します。このコマンドは Xcode Cloud でも利用することが可能です。  
-`-c` オプションの次に指定する1つ目の文字列で編集内容を指定します。今回は値の書き込みなので `Set:` で始まり、書き込み対象は plist の key タグを辿って指定します。そして、半角スペースの後に書き込む値を埋め込みます。最後に、2つ目の文字列で書き込み対象のファイルパスを指定しています。
+次に、plist ファイルの編集には `PlistBuddy` コマンドを使用します。このコマンドは Xcode Cloud でも利用できます。  
+上記のスクリプトでは、 `-c` オプションの後に続く1つ目の文字列で編集内容を指定します。この場合、 `Set:` を使って値の書き込みを指定し、編集対象のキーを `LSEnvironment:NATIONAL_TAX_AGENCY_API_KEY` と指定しています。 `${NTA_API_KEY}` はシェル変数であり、後ほど詳しく解説します。  
+2つ目の文字列では、編集対象の plist ファイルのパスを指定しています。`${TEMP_DIR}` はシェル変数であり、ビルド時に準備される一時ファイルのディレクトリパスが指定されます。
+
+このスクリプトを実行することで、指定したキーに対してシークレットキーが `Preprocessed-Info.plist` ファイルに書き込まれます。なお、編集するキーのパスはプロジェクトの要件に合わせて適切に設定してください。
 
 ```swift
 guard let environment = Bundle.main.object(forInfoDictionaryKey: "LSEnvironment") as? [String: String],
