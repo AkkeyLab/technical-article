@@ -233,6 +233,7 @@ echo -e "export NTA_API_KEY=8440F6C4-EB3C-D545-1741-67E3DAD0C6B1" >>~/.zshrc
 どこか一部でも皆さんの環境に活かせるものがあると嬉しいです。  
 本稿は GitHub で管理されておりますので、気軽に issue などの形で質問や修正依頼いただけますと幸いです。
 
+## 参考文献
 *1: https://github.com/yshrsmz/BuildKonfig  
 *2: https://github.com/direnv/direnv
 
