@@ -58,7 +58,7 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 
 上記は `project.pbxproj` ファイル内で定義されている該当箇所の一部です。ただし、Build Configuration の内容や個数はプロジェクトによって異なる可能性があるため、シークレットキーを使用する全ての部分に適用してください。
 
-次に重要になるのが　`Preprocessed-Info.plist` ファイルを書き換えるタイミングです。このファイルはあくまでも一時ファイルなので、利用される直前がベストであると言えます。したがって、plist ファイルを書き換えるスクリプトは Copy Bundle Resources の直前にすると良いと分かります。  
+次に重要なのは、 `Preprocessed-Info.plist` ファイルを書き換えるタイミングです。このファイルは一時ファイルであるため、利用される直前に書き換えるのが最適です。したがって、plist ファイルを書き換えるスクリプトを「Copy Bundle Resources」の直前に配置するのが良いと言えます。  
 実際にスクリプトを設定したときの `project.pbxproj` ファイルの一部を以下に示します。
 
 ```xml
@@ -78,7 +78,8 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 /* End PBXNativeTarget section */
 ```
 
-上記は、Build Phases の設定が記述されている箇所で、Copy Bundle Resources の直前に Setting Environment Variables という名前でスクリプトを配置していることが分かります。
+上記のコードは、Build Phases の設定が記述されている箇所で、 `Copy Bundle Resources` の直前に `Setting Environment Variables` という名前のスクリプトが配置されていることが分かります。これにより、ビルド時にスクリプトが実行され、 `Preprocessed-Info.plist` ファイルが書き換えられます。その後、変更内容が正しく反映された plist ファイルがバンドルリソースにコピーされます。  
+ただし、プロジェクトによって `project.pbxproj` ファイルの構造や設定の名称が異なる場合がありますので、適切な箇所にスクリプトを配置するように調整してください。
 
 ```xml
 /* Begin PBXShellScriptBuildPhase section */
