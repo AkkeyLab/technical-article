@@ -17,7 +17,7 @@ GitHub: https://github.com/AkkeyLab/technical-article
 2. Keychain Access にシークレットキーを追加
 3. ビルドのタイミングで info.plist に書き込み
 
-まずは、KMM などを活用しないバニラ環境下におけるソリューションをご紹介します。手順は上記3ステップとなります。
+まずは、KMMなどを活用しない通常の環境下でのソリューションをご紹介します。手順は上記の3ステップになります。
 
 ### 1. info.plist に定義のみ追加
 
@@ -33,8 +33,8 @@ GitHub: https://github.com/AkkeyLab/technical-article
 </plist>
 ```
 
-info.plist ファイルにシークレットキーの定義を環境変数として追加します。この時、value は後ほど正しい値に置換されるので、適当な値もしくは空にしておきます。  
-なお、今回は国税庁公式 API を使ったシステムを例にご紹介しますので、実践される場合は key や value の値を適宜書き換えてください。
+上記のコードは、 `info.plist` ファイルにシークレットキーの定義を環境変数として追加するものです。ここでは、国税庁の公式 API を使用するシステムを例に説明しますが、実際に適用する際には適切な値に置き換えてください。  
+このコードでは、 `LSEnvironment` キーの下に `NATIONAL_TAX_AGENCY_API_KEY` キーを追加し、その値を `$(NTA_API_KEY)` に設定しています。 `$(NTA_API_KEY)` は後で正しい値に置き換えられるため、適当な値で構いません。
 
 ### 2. Keychain Access にシークレットキーを追加
 ![image](images/how-to-hide-the-key-029.png)
