@@ -43,8 +43,8 @@ GitHub: https://github.com/AkkeyLab/technical-article
 ただし、CI（継続的インテグレーション）ではこのコマンドを実行しないでください。ちなみに、Xcode Cloud では `security` コマンドの使用が禁止されています。
 
 ### 3. ビルドのタイミングで info.plist に書き込み
-初めに仮定義を行った `info.plist` ファイルに正しいシークレットキーを書き込んでいきましょう。ただし、直接書き込んでしまうと `info.plist` ファイルに差分が生じてしまいます。そこで、ビルド時に一時ファイルとして生成される　`Preprocessed-Info.plist` ファイルを書き換えるという手法を採用することにします。  
-この一時ファイルの生成はデフォルトで無効化されているため、Build Settings から Preprocess Info.plist File という項目の値を YES に書き換えることで有効化します。
+まずはじめに、仮の定義を行った `info.plist` ファイルに正しいシークレットキーを書き込みましょう。ただし、直接 `info.plist` ファイルを書き換えてしまうと、ファイルに差分が生じてしまいます。そのため、ビルド時に一時ファイルとして生成される `Preprocessed-Info.plist` ファイルを書き換える手法を採用します。  
+一時ファイルの生成はデフォルトで無効化されているため、Build Settings から「Preprocess Info.plist File」という項目の値を YES に変更することで有効化します。
 
 ```xml
 F4C37D3F296AEE2200D0084B /* Debug */ = {
@@ -56,7 +56,7 @@ F4C37D3F296AEE2200D0084B /* Debug */ = {
 };
 ```
 
-`project.pbxproj` ファイルにおける定義の該当箇所を上記に示します。なお、Build Configuration の内容と個数はプロジェクトによって異なる可能性がありますので、シークレットキーを利用するもの全てに適応させてください。
+上記は `project.pbxproj` ファイル内で定義されている該当箇所の一部です。ただし、Build Configuration の内容や個数はプロジェクトによって異なる可能性があるため、シークレットキーを使用する全ての部分に適用してください。
 
 次に重要になるのが　`Preprocessed-Info.plist` ファイルを書き換えるタイミングです。このファイルはあくまでも一時ファイルなので、利用される直前がベストであると言えます。したがって、plist ファイルを書き換えるスクリプトは Copy Bundle Resources の直前にすると良いと分かります。  
 実際にスクリプトを設定したときの `project.pbxproj` ファイルの一部を以下に示します。
