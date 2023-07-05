@@ -203,9 +203,13 @@ ld -o greeting greeting.o \
 *3: [Apple Silicon から学ぶ CPU の歴史](https://github.com/AkkeyLab/technical-article/blob/main/cpu-history.md)
 
 ## 著者
+Akio Itaya (akkey)
+
 - AkkeyLab株式会社 代表取締役
 - 株式会社AppBrew エンジニア
 - 合同会社アイネット エンジニア
 
 本稿執筆時点で3社に所属するプログラマー兼経営者。  
 緑の毛色が特徴の初代ファービーを両親に買ってもらって遊んだのが良い思い出。遊んでいる間に何をしてもすぐに寝てしまうようになってしまい、乾電池を抜いてしまった。アセンブリを読めば、なぜすぐ寝てしまうのか解読できるのかもしれませんね。
+
+AkkeyLab は 板谷 晃良 の商標又は登録商標です

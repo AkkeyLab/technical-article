@@ -237,9 +237,13 @@ echo -e "export NTA_API_KEY=8440F6C4-EB3C-D545-1741-67E3DAD0C6B1" >>~/.zshrc
 *2: https://github.com/direnv/direnv
 
 ## 著者
+Akio Itaya (akkey)
+
 - AkkeyLab株式会社 代表取締役
 - 株式会社AppBrew エンジニア
 - 合同会社アイネット エンジニア
 
 本稿執筆時点で3社に所属するプログラマー兼経営者。  
 Swift との出会いは大学。まだ公式ドキュメント以外の情報が少なかったこともあり、Objective-C で書かれたコードを頑張って読んでいたのが良い思い出。今でも Swift を書いてます。
+
+AkkeyLab は 板谷 晃良 の商標又は登録商標です
