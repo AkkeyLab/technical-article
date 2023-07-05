@@ -39,10 +39,8 @@ GitHub: https://github.com/AkkeyLab/technical-article
 ### 2. Keychain Access にシークレットキーを追加
 ![image](images/how-to-hide-the-key-029.png)
 
-GUI もしくは `security` コマンド経由で、ローカルマシンの Keychain Access App にシークレットキーを保存します。チーム開発環境下では、1password などのパスワード管理ソフトにシークレットキーと共に登録コマンドをメモしておくと便利かもしれません。  
-なお、 `security` コマンドについては `man security` で調べることができます。
-
-ただし、このコマンドを CI では実行しないでください。なお、Xcode Cloud では `security` コマンドの使用が禁じられています。
+シークレットキーをローカルマシンの Keychain Access アプリに保存するためには、GUI または `security` コマンドを使用します。チーム開発環境では、1password などのパスワード管理ソフトウェアにシークレットキーと `security` コマンドをメモしておくと便利です。また、 `security` コマンドの詳細は、`man security` コマンドを使用することで参照できます。  
+ただし、CI（継続的インテグレーション）ではこのコマンドを実行しないでください。ちなみに、Xcode Cloud では `security` コマンドの使用が禁止されています。
 
 ### 3. ビルドのタイミングで info.plist に書き込み
 初めに仮定義を行った `info.plist` ファイルに正しいシークレットキーを書き込んでいきましょう。ただし、直接書き込んでしまうと `info.plist` ファイルに差分が生じてしまいます。そこで、ビルド時に一時ファイルとして生成される　`Preprocessed-Info.plist` ファイルを書き換えるという手法を採用することにします。  
