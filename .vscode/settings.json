@@ -1,0 +1,8 @@
+{
+    "prh.enable": true,
+    "prh.prhlsPath": "/opt/homebrew/bin/prhls",
+    "prh.configFiles": [
+        "prh.yml"
+    ],
+    "prh.trace.server": "off",
+}
